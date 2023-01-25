@@ -10,6 +10,11 @@ export const createAssetRouter = createTRPCRouter({
       }),
     )
     .mutation(({ input }) => {
-        console.log(input)
+        return {
+            asset: {
+                name: input.title,
+                id: 1,
+            }
+        }
     }),
 });
