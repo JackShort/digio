@@ -16,6 +16,8 @@
     "@trpc/next": "^10.8.1",
     "@trpc/react-query": "^10.8.1",
     "@trpc/server": "^10.8.1",
+    "aws-sdk": "^2.1302.0",
+    "axios": "^1.2.4",
     "jotai": "^1.13.1",
     "next": "13.1.2",
     "react": "18.2.0",

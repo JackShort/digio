@@ -1,5 +1,6 @@
 import { createTRPCRouter } from "./trpc";
 import { createAssetRouter } from "./routers/createAsset";
+import { presignedUrlRouter } from "./routers/presignedUrl";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { createAssetRouter } from "./routers/createAsset";
  */
 export const appRouter = createTRPCRouter({
   createAsset: createAssetRouter,
+  presignedUrl: presignedUrlRouter,
 });
 
 // export type definition of API
