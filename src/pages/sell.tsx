@@ -17,8 +17,10 @@ const SellPage: NextPage = () => {
   const presignedUrlMutation = api.presignedUrl.generate.useMutation({
     onSuccess: (data) => {
       const { key, url } = data
+      console.log("this would theoretically upload to: " + key + " at " + url )
 
-      axios.put(url, file).then(() => {console.log('uploaded at: ' + key)}).catch((err) => {console.log(err)})
+      //TODO: enable this when we want to do uploads
+      // axios.put(url, file).then(() => {console.log('uploaded at: ' + key)}).catch((err) => {console.log(err)})
     }
   })
 
