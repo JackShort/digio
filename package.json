@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@prisma/client": "^4.8.0",
+    "@rainbow-me/rainbowkit": "^0.8.1",
     "@tanstack/react-query": "^4.20.0",
     "@trpc/client": "^10.8.1",
     "@trpc/next": "^10.8.1",
@@ -18,11 +19,13 @@
     "@trpc/server": "^10.8.1",
     "aws-sdk": "^2.1302.0",
     "axios": "^1.2.4",
+    "ethers": "^5.7.2",
     "jotai": "^1.13.1",
     "next": "13.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "superjson": "1.9.1",
+    "wagmi": "^0.10.15",
     "zod": "^3.20.2"
   },
   "devDependencies": {
