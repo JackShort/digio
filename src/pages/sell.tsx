@@ -11,15 +11,21 @@ import { useDebounce } from '../hooks/useDebounce';
 import { api } from "../utils/api";
 import abi from '../abi/v0abi.json';
 import { env } from '../env/client.mjs';
+import Link from 'next/link';
 
 const nameAtom = atom("") 
 const fileAtom = atom<File | undefined>(undefined)
 const priceAtom = atom("")
+const executedSellAtom = atom(false)
+const assetHashAtom = atom("")
 
 const SellPage: NextPage = () => {
   const [name, setName] = useAtom(nameAtom)
   const [file, setFile] = useAtom(fileAtom)
   const [price, setPrice] = useAtom(priceAtom)
+  const [executedSell, setExecutedSell] = useAtom(executedSellAtom)
+  const [assetHash, setAssetHash] = useAtom(assetHashAtom)
+
   const debouncedPrice = useDebounce(price, 500)
 
   const { isConnected, address } = useAccount()
@@ -37,6 +43,8 @@ const SellPage: NextPage = () => {
   const assetMutation = api.createAsset.create.useMutation({
     onSuccess: (data) => {
       presignedUrlMutation.mutate({slug: data.slug})
+      setExecutedSell(true)
+      setAssetHash(data.slug)
     }
   })
 
@@ -60,7 +68,7 @@ const SellPage: NextPage = () => {
     hash: data?.hash,
     onSuccess: () => {
       if ( !file || !address || !nextProjectIdSuccess || !nextProjectIdData ) return
-      assetMutation.mutate({ name, slug: address.toLowerCase() + name.toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString(), priceInWei: ethers.utils.parseEther(debouncedPrice).toString() })
+      assetMutation.mutate({ name, slug: address.toLowerCase() + name.replace(/\s/g, "").toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString(), priceInWei: ethers.utils.parseEther(debouncedPrice).toString() })
     }
   })
   
@@ -105,7 +113,15 @@ const SellPage: NextPage = () => {
                 </label>
                 <input type="file" className="bg-zinc-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name" onChange={handleFileChange} />
             </div>
-            {isConnected ?
+            {executedSell ? 
+              (
+                <Link href={`/asset/${assetHash}`}>
+                  <button className="inline-flex items-center shadow bg-blue-500 disabled:bg-zinc-400 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button">
+                    Access Asset Page
+                  </button>
+                </Link>
+              )
+              : isConnected ?
                 (
                   <div className="flex items-center">
                       <button className="inline-flex items-center shadow bg-purple-500 disabled:bg-zinc-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button" onClick={() => submitForm()} disabled={!canSubmit}>
