@@ -38,7 +38,7 @@ const Asset = () => {
         address: `0x${env.NEXT_PUBLIC_CONTRACT_ADDRESS}`,
         abi: abi,
         args: [data?.projectId, "0xaDd287e6d0213e662D400d815C481b4b2ddE5d65"],
-        overrides: {value: ethers.utils.parseEther("0.01")},
+        overrides: {value: ethers.utils.parseEther("0.015")},
         functionName: 'mint',
     })
 

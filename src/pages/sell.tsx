@@ -7,6 +7,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { FormEvent} from "react";
 import { BigNumber, ethers } from 'ethers';
 
+import { useDebounce } from '../hooks/useDebounce';
 import { api } from "../utils/api";
 import abi from '../abi/v0abi.json';
 import { env } from '../env/client.mjs';
@@ -19,6 +20,7 @@ const SellPage: NextPage = () => {
   const [name, setName] = useAtom(nameAtom)
   const [file, setFile] = useAtom(fileAtom)
   const [price, setPrice] = useAtom(priceAtom)
+  const debouncedPrice = useDebounce(price, 500)
 
   const { isConnected, address } = useAccount()
 
@@ -28,7 +30,7 @@ const SellPage: NextPage = () => {
       console.log("this would theoretically upload to: " + key + " at " + url )
 
       //TODO: enable this when we want to do uploads
-      // axios.put(url, file).then(() => {console.log('uploaded at: ' + key)}).catch((err) => {console.log(err)})
+      axios.put(url, file).then(() => {console.log('uploaded at: ' + key)}).catch((err) => {console.log(err)})
     }
   })
 
@@ -47,17 +49,18 @@ const SellPage: NextPage = () => {
   const { config } = usePrepareContractWrite({
     address: `0x${env.NEXT_PUBLIC_CONTRACT_ADDRESS}`,
     abi: abi,
-    args: ["testing", "0xaDd287e6d0213e662D400d815C481b4b2ddE5d65", BigNumber.from("10000000000000000")],
+    args: ["likewhocarestho", "0xaDd287e6d0213e662D400d815C481b4b2ddE5d65", debouncedPrice ? ethers.utils.parseEther(debouncedPrice).toString() : BigNumber.from(0)],
+    enabled: Boolean(debouncedPrice),
     functionName: 'addProject',
   })
 
   const { data, write } = useContractWrite(config)
 
-  const { isLoading: transactionLoading, isSuccess: transactionSuccess } = useWaitForTransaction({
+  const { isLoading: transactionLoading } = useWaitForTransaction({
     hash: data?.hash,
     onSuccess: () => {
       if ( !file || !address || !nextProjectIdSuccess || !nextProjectIdData ) return
-      assetMutation.mutate({ name, slug: address.toLowerCase() + name.toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString(), priceInWei: ethers.utils.parseEther })
+      assetMutation.mutate({ name, slug: address.toLowerCase() + name.toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString(), priceInWei: ethers.utils.parseEther(debouncedPrice).toString() })
     }
   })
   
@@ -65,7 +68,7 @@ const SellPage: NextPage = () => {
   const handlePriceChange = (e: FormEvent<HTMLInputElement>) => setPrice(e.currentTarget.value)
   const handleFileChange = (e: FormEvent<HTMLInputElement>) => setFile(e.currentTarget.files?.[0])
 
-  const canSubmit = !( !file || !address || !nextProjectIdSuccess || !nextProjectIdData || !name || !price || transactionLoading)
+  const canSubmit = !( !file || !address || !nextProjectIdSuccess || !nextProjectIdData || !name || !price || transactionLoading || assetMutation.isLoading)
 
   const submitForm = () => {
     if (!canSubmit) return
@@ -107,7 +110,7 @@ const SellPage: NextPage = () => {
                   <div className="flex items-center">
                       <button className="inline-flex items-center shadow bg-purple-500 disabled:bg-zinc-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button" onClick={() => submitForm()} disabled={!canSubmit}>
                         <>
-                          {transactionLoading ?
+                          {transactionLoading || assetMutation.isLoading ?
                             (
                               <>
                                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -128,18 +131,6 @@ const SellPage: NextPage = () => {
                 )
               :
               <ConnectButton />
-            }
-            {
-              transactionLoading && <p className='text-white'>Transaction Loading...</p>
-            }
-            {
-              transactionSuccess && <p className='text-white'>Transaction Success!</p>
-            }
-            {assetMutation.isLoading || assetMutation.isSuccess && 
-              <div className="text-white">
-                {assetMutation.isLoading && <p>Loading...</p>}
-                {assetMutation.isSuccess && <p>{assetMutation.data.slug}</p>}
-              </div>
             }
         </div>
       </main>
