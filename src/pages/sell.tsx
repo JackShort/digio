@@ -3,6 +3,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { atom, useAtom } from "jotai";
 import { useAccount } from "wagmi";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 import { api } from "../utils/api";
 import type { FormEvent} from "react";
@@ -65,15 +66,19 @@ const SellPage: NextPage = () => {
                 <input type="file" className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name" onChange={handleFileChange} />
                 </div>
             </div>
-            {isConnected &&
-              <div className="md:flex md:items-center">
-                  <div className="md:w-1/3"></div>
-                  <div className="md:w-2/3">
-                  <button className="shadow bg-purple-500 disabled:bg-slate-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" onClick={() => submitForm()} disabled={!file}>
-                      Sell
-                  </button>
+            {isConnected ?
+                (
+                  <div className="md:flex md:items-center">
+                      <div className="md:w-1/3"></div>
+                      <div className="md:w-2/3">
+                      <button className="shadow bg-purple-500 disabled:bg-slate-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" onClick={() => submitForm()} disabled={!file}>
+                          Sell
+                      </button>
+                      </div>
                   </div>
-              </div>
+                )
+              :
+              <ConnectButton />
             }
           <div className="text-white">
             {assetMutation.isLoading && <p>Loading...</p>}
