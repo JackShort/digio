@@ -33,7 +33,7 @@ const SellPage: NextPage = () => {
   const submitForm = () => {
     if ( !file || !address ) return
     assetMutation.mutate({ name, slug: address + name, creator: address })
-    // presignedUrlMutation.mutate()
+    // presignedUrlMutation.mutate({slug: address.toString() + name})
   }
 
   return (

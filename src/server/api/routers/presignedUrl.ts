@@ -15,8 +15,13 @@ const s3 = new S3({
 
 export const presignedUrlRouter = createTRPCRouter({
   generate: publicProcedure
-    .mutation(() => {
-        const key = `${randomUUID()}.zip`;
+    .input(
+        z.object({
+            slug: z.string(),
+        }),
+    )
+    .mutation(({ input }) => {
+        const key = `${input.slug}.zip`;
 
         const params = {
             Bucket: 'unidemo',
@@ -27,5 +32,21 @@ export const presignedUrlRouter = createTRPCRouter({
         const url = s3.getSignedUrl('putObject', params)
 
         return {url: url, key: key}
+    }),
+    get: publicProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      }),
+    )
+    .query(({ input }) => {
+        const params = {
+            Bucket: 'unidemo',
+            Key: input.slug + '.zip',
+        }
+        
+        const url = s3.getSignedUrl('getObject', params)
+
+        return url
     }),
 });

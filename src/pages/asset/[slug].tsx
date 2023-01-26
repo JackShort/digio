@@ -8,6 +8,8 @@ const Asset = () => {
     const slug = router.query.slug
 
     const assetQuery = api.asset.get.useQuery({ slug: slug?.toString() ?? "" })
+    const presignedUrl = api.presignedUrl.get.useQuery({ slug: slug?.toString() ?? "" })
+    console.log(presignedUrl.data)
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#000000] to-[#15162c]">
