@@ -6,15 +6,18 @@ export const createAssetRouter = createTRPCRouter({
   create: publicProcedure
     .input(
       z.object({
-        title: z.string(),
+        name: z.string(),
+        hash: z.string(),
+        creator: z.string(),
       }),
     )
-    .mutation(({ input }) => {
-        return {
-            asset: {
-                name: input.title,
-                id: 1,
-            }
-        }
+    .mutation(({ ctx, input }) => {
+      const asset = {
+        name: input.name,
+        hash: input.hash,
+        createdBy: input.creator,
+      }
+
+      return ctx.prisma.asset.create({ data: asset })
     }),
 });

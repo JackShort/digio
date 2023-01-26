@@ -10,6 +10,7 @@ export const assetRouter = createTRPCRouter({
       }),
     )
     .query(({ ctx, input }) => {
-        return ctx.prisma.asset.findMany()
+        const { id } = input;
+        return ctx.prisma.asset.findUnique({ where: {id}})
     }),
 });
