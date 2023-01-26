@@ -48,4 +48,23 @@ export const presignedUrlRouter = createTRPCRouter({
 
         return url
     }),
+    uploadImage: publicProcedure
+    .input(
+        z.object({
+            slug: z.string(),
+        }),
+    )
+    .mutation(({ input }) => {
+        const key = `${input.slug.toLowerCase()}`;
+
+        const params = {
+            Bucket: 'uniservingimages',
+            Key: key,
+            ContentType: `Image/${input.slug.split('.').pop() ?? 'png'}`,
+        }
+        
+        const url = s3.getSignedUrl('putObject', params)
+
+        return {url: url, key: key}
+    }),
 });

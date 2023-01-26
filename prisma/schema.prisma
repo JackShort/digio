@@ -17,6 +17,9 @@ model Asset {
     projectId String
     priceInWei String
     createdBy String
+    description String
+    headerImageKey String?
+    footerImageKey String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

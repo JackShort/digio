@@ -14,14 +14,20 @@ import { env } from '../env/client.mjs';
 import Link from 'next/link';
 
 const nameAtom = atom("") 
+const descriptionAtom = atom("") 
 const fileAtom = atom<File | undefined>(undefined)
+const headerFileAtom = atom<File | undefined>(undefined)
+const footerFileAtom = atom<File | undefined>(undefined)
 const priceAtom = atom("")
 const executedSellAtom = atom(false)
 const assetHashAtom = atom("")
 
 const SellPage: NextPage = () => {
   const [name, setName] = useAtom(nameAtom)
+  const [description, setDescription] = useAtom(descriptionAtom)
   const [file, setFile] = useAtom(fileAtom)
+  const [headerFile, setHeaderFile] = useAtom(headerFileAtom)
+  const [footerFile, setFooterFile] = useAtom(footerFileAtom)
   const [price, setPrice] = useAtom(priceAtom)
   const [executedSell, setExecutedSell] = useAtom(executedSellAtom)
   const [assetHash, setAssetHash] = useAtom(assetHashAtom)
@@ -40,8 +46,35 @@ const SellPage: NextPage = () => {
     }
   })
 
+  const presignedHeaderImageUrlMutation = api.presignedUrl.uploadImage.useMutation({
+    onSuccess: (data) => {
+      const { key, url } = data
+      console.log("this would theoretically upload the header image to: " + key + " at " + url )
+
+      //TODO: enable this when we want to do uploads
+      axios.put(url, headerFile).then(() => {console.log('uploaded at: ' + key)}).catch((err) => {console.log(err)})
+    }
+  })
+  const presignedFooterImageUrlMutation = api.presignedUrl.uploadImage.useMutation({
+    onSuccess: (data) => {
+      const { key, url } = data
+      console.log("this would theoretically upload the footer image to: " + key + " at " + url )
+
+      //TODO: enable this when we want to do uploads
+      axios.put(url, footerFile).then(() => {console.log('uploaded at: ' + key)}).catch((err) => {console.log(err)})
+    }
+  })
+
   const assetMutation = api.createAsset.create.useMutation({
     onSuccess: (data) => {
+      if (headerFile) {
+        presignedHeaderImageUrlMutation.mutate({slug: data.slug + 'header.' + (headerFile.name.split('.').pop() ?? '')})
+      }
+
+      if (footerFile) {
+        presignedFooterImageUrlMutation.mutate({slug: data.slug + 'footer.' + (footerFile.name.split('.').pop() ?? '')})
+      }
+
       presignedUrlMutation.mutate({slug: data.slug})
       setExecutedSell(true)
       setAssetHash(data.slug)
@@ -68,15 +101,18 @@ const SellPage: NextPage = () => {
     hash: data?.hash,
     onSuccess: () => {
       if ( !file || !address || !nextProjectIdSuccess || !nextProjectIdData ) return
-      assetMutation.mutate({ name, slug: address.toLowerCase() + name.replace(/\s/g, "").toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString(), priceInWei: ethers.utils.parseEther(debouncedPrice).toString() })
+      assetMutation.mutate({ name, description, slug: address.toLowerCase() + name.replace(/\s/g, "").toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString(), priceInWei: ethers.utils.parseEther(debouncedPrice).toString(), headerImageKey: headerFile ? address.toLowerCase() + name.replace(/\s/g, "").toLowerCase() + 'header.' + (headerFile.name.split('.').pop() ?? '') : null, footerImageKey: footerFile ? address.toLowerCase() + name.replace(/\s/g, "").toLowerCase() + 'footer.' + (footerFile.name.split('.').pop() ?? '') : null })
     }
   })
   
   const handleTitleChange = (e: FormEvent<HTMLInputElement>) => setName(e.currentTarget.value)
+  const handleDescriptionChange = (e: FormEvent<HTMLTextAreaElement>) => setDescription(e.currentTarget.value)
   const handlePriceChange = (e: FormEvent<HTMLInputElement>) => setPrice(e.currentTarget.value)
   const handleFileChange = (e: FormEvent<HTMLInputElement>) => setFile(e.currentTarget.files?.[0])
+  const handleHeaderFileChange = (e: FormEvent<HTMLInputElement>) => setHeaderFile(e.currentTarget.files?.[0])
+  const handleFooterFileChange = (e: FormEvent<HTMLInputElement>) => setFooterFile(e.currentTarget.files?.[0])
 
-  const canSubmit = !( !file || !address || !nextProjectIdSuccess || !nextProjectIdData || !name || !price || transactionLoading || assetMutation.isLoading)
+  const canSubmit = !( !file || !address || !nextProjectIdSuccess || !nextProjectIdData || !name || !price || !description || transactionLoading || assetMutation.isLoading)
 
   const submitForm = () => {
     if (!canSubmit) return
@@ -99,6 +135,12 @@ const SellPage: NextPage = () => {
                 </label>
                 <input className="bg-zinc-200 appearance-none border-2 border-zinc-200 rounded w-full py-2 px-4 text-zinc-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-400" id="inline-full-name" type="text" value={name} onChange={handleTitleChange} placeholder="Example" />
             </div>
+            <div className="flex items-center gap-6 w-full">
+                <label className="block w-24 shrink-0 text-zinc-500 font-bold text-right" htmlFor="inline-description">
+                  Description
+                </label>
+                <textarea className="bg-zinc-200 appearance-none border-2 border-zinc-200 rounded w-full py-2 px-4 text-zinc-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-400" id="inline-description" value={description} onChange={handleDescriptionChange} placeholder="..." />
+            </div>
             <div className="flex items-center w-full">
                 <label className="block w-24 shrink-0 text-zinc-500 font-bold text-right mr-6" htmlFor="inline-price">
                   Price
@@ -109,8 +151,20 @@ const SellPage: NextPage = () => {
                 </label>
             </div>
             <div className="flex items-center gap-6 w-full">
+                <label className="block w-24 text-zinc-500 font-bold shrink-0 text-right" htmlFor="header-image-input">
+                    Header Image
+                </label>
+                <input type="file" className="bg-zinc-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="header-image-input" onChange={handleHeaderFileChange} />
+            </div>
+            <div className="flex items-center gap-6 w-full">
+                <label className="block w-24 text-zinc-500 font-bold shrink-0 text-right" htmlFor="footer-image-input">
+                    Footer Image
+                </label>
+                <input type="file" className="bg-zinc-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="footer-image-input" onChange={handleFooterFileChange} />
+            </div>
+            <div className="flex items-center gap-6 w-full">
                 <label className="block w-24 text-zinc-500 font-bold shrink-0 text-right" htmlFor="inline-full-name">
-                    File
+                    Asset File
                 </label>
                 <input type="file" className="bg-zinc-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name" onChange={handleFileChange} />
             </div>

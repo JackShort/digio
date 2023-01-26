@@ -1,3 +1,4 @@
+import Head from "next/head"
 import { useRouter } from "next/router"
 import type { ReactNode} from "react";
 import { useEffect } from "react";
@@ -12,11 +13,18 @@ import abi from '../../abi/v0abi.json';
 
 const Container = ({ children }: { children: ReactNode}) => {
     return (
-        <main className="flex min-h-screen flex-col items-center bg-zinc-200 pt-48">
-            <div className="rounded bg-zinc-100 border-zinc-900 border-2 flex flex-col items-center justify-center gap-8 px-4 py-10">
-                {children}
-            </div>
-        </main>
+        <>
+            <Head>
+                <title>Asset</title>
+                <meta name="description" content="Selling on Digio" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
+            <main className="flex min-h-screen flex-col items-center bg-zinc-200 pt-48">
+                <div className="rounded bg-zinc-100 border-zinc-900 border-2 flex flex-col items-center justify-center gap-8 px-4 py-10">
+                    {children}
+                </div>
+            </main>
+        </>
     )
 }
 
