@@ -2,10 +2,10 @@ import axios from 'axios'
 import { type NextPage } from "next";
 import Head from "next/head";
 import { atom, useAtom } from "jotai";
-import { useAccount, useContractRead } from "wagmi";
+import { useAccount, useContractRead, usePrepareContractWrite, useContractWrite, useWaitForTransaction } from "wagmi";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { FormEvent} from "react";
-import type { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers';
 
 import { api } from "../utils/api";
 import abi from '../abi/v0abi.json';
@@ -20,7 +20,6 @@ const SellPage: NextPage = () => {
 
   const { isConnected, address } = useAccount()
 
-  const assetMutation = api.createAsset.create.useMutation()
   const presignedUrlMutation = api.presignedUrl.generate.useMutation({
     onSuccess: (data) => {
       const { key, url } = data
@@ -31,19 +30,41 @@ const SellPage: NextPage = () => {
     }
   })
 
-  const { data: nextProjectIdData, isSuccess } = useContractRead({
+  const assetMutation = api.createAsset.create.useMutation({
+    onSuccess: (data) => {
+      presignedUrlMutation.mutate({slug: data.slug})
+    }
+  })
+
+  const { data: nextProjectIdData, isSuccess: nextProjectIdSuccess } = useContractRead({
     address: `0x${env.NEXT_PUBLIC_CONTRACT_ADDRESS}`,
     abi: abi,
     functionName: 'nextProjectId',    
+  })
+
+  const { config } = usePrepareContractWrite({
+    address: `0x${env.NEXT_PUBLIC_CONTRACT_ADDRESS}`,
+    abi: abi,
+    args: ["testing", "0xaDd287e6d0213e662D400d815C481b4b2ddE5d65", BigNumber.from("10000000000000000")],
+    functionName: 'addProject',
+  })
+
+  const { data, write } = useContractWrite(config)
+ 
+  const { isLoading: transactionLoading, isSuccess: transactionSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+    onSuccess: () => {
+      if ( !file || !address || !nextProjectIdSuccess || !nextProjectIdData ) return
+      assetMutation.mutate({ name, slug: address + name, creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString() })
+    }
   })
   
   const handleTitleChange = (e: FormEvent<HTMLInputElement>) => setName(e.currentTarget.value)
   const handleFileChange = (e: FormEvent<HTMLInputElement>) => setFile(e.currentTarget.files?.[0])
 
   const submitForm = () => {
-    if ( !file || !address || !isSuccess ) return
-    assetMutation.mutate({ name, slug: address + name, creator: address })
-    // presignedUrlMutation.mutate({slug: address.toString() + name})
+    if ( !file || !address || !nextProjectIdSuccess || !nextProjectIdData ) return
+    write?.()
   }
 
   return (
@@ -75,12 +96,12 @@ const SellPage: NextPage = () => {
                 <input type="file" className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name" onChange={handleFileChange} />
                 </div>
             </div>
-            {isConnected ?
+            {isConnected && !transactionLoading ?
                 (
                   <div className="md:flex md:items-center">
                       <div className="md:w-1/3"></div>
                       <div className="md:w-2/3">
-                      <button className="shadow bg-purple-500 disabled:bg-slate-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" onClick={() => submitForm()} disabled={!file || !isSuccess}>
+                      <button className="shadow bg-purple-500 disabled:bg-slate-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" onClick={() => submitForm()} disabled={!file || !nextProjectIdSuccess}>
                           Sell
                       </button>
                       </div>
@@ -88,6 +109,12 @@ const SellPage: NextPage = () => {
                 )
               :
               <ConnectButton />
+            }
+            {
+              transactionLoading && <p className='text-white'>Transaction Loading...</p>
+            }
+            {
+              transactionSuccess && <p className='text-white'>Transaction Success!</p>
             }
           <div className="text-white">
             {assetMutation.isLoading && <p>Loading...</p>}

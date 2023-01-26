@@ -8,6 +8,7 @@ export const createAssetRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         slug: z.string(),
+        projectId: z.string(),
         creator: z.string(),
       }),
     )
@@ -15,6 +16,7 @@ export const createAssetRouter = createTRPCRouter({
       const asset = {
         name: input.name,
         slug: input.slug,
+        projectId: input.projectId,
         createdBy: input.creator,
       }
 
