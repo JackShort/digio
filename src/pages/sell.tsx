@@ -50,12 +50,12 @@ const SellPage: NextPage = () => {
   })
 
   const { data, write } = useContractWrite(config)
- 
+
   const { isLoading: transactionLoading, isSuccess: transactionSuccess } = useWaitForTransaction({
     hash: data?.hash,
     onSuccess: () => {
       if ( !file || !address || !nextProjectIdSuccess || !nextProjectIdData ) return
-      assetMutation.mutate({ name, slug: address + name, creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString() })
+      assetMutation.mutate({ name, slug: address.toLowerCase() + name.toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString() })
     }
   })
   
