@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 import type { ReactNode } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from "wagmi";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 
 import { api } from "../../utils/api";
 import { env } from "../../env/client.mjs";
