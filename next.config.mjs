@@ -14,5 +14,8 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ['uniservingimages.s3.amazonaws.com'],
+  },
 };
 export default config;

@@ -1,4 +1,5 @@
 import Head from "next/head"
+import Image from 'next/image'
 import { useRouter } from "next/router"
 import type { ReactNode} from "react";
 import { useEffect } from "react";
@@ -10,6 +11,8 @@ import { atom, useAtom } from "jotai";
 import { api } from "../../utils/api";
 import { env } from "../../env/client.mjs";
 import abi from '../../abi/v0abi.json';
+
+const awsImages = 'https://uniservingimages.s3.amazonaws.com/'
 
 const Container = ({ children }: { children: ReactNode}) => {
     return (
@@ -90,7 +93,13 @@ const Asset = () => {
         <Container>
             <>
                 <div className="text-lg font-bold">{data.name}</div>
-                {ownsAsset && 
+                {data.headerImageKey &&
+                    <Image src={awsImages + ( data.headerImageKey as string )} width={500} height={200} alt="idk" />
+                }
+                {data.footerImageKey &&
+                    <Image src={awsImages + ( data.footerImageKey as string )} width={500} height={200} alt="idk" />
+                }
+                {ownsAsset &&
                     (
                     <button className="inline-flex items-center shadow bg-blue-500 disabled:bg-zinc-400 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button" disabled={!presignedUrl.data}>
                         <a target="_blank" href={presignedUrl.data} rel="noopener noreferrer">
