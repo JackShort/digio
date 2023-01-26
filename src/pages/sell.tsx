@@ -32,7 +32,7 @@ const SellPage: NextPage = () => {
 
   const submitForm = () => {
     if ( !file || !address ) return
-    assetMutation.mutate({ name, hash: address + name, creator: address })
+    assetMutation.mutate({ name, slug: address + name, creator: address })
     // presignedUrlMutation.mutate()
   }
 
@@ -77,7 +77,7 @@ const SellPage: NextPage = () => {
             }
           <div className="text-white">
             {assetMutation.isLoading && <p>Loading...</p>}
-            {assetMutation.isSuccess && <p>{assetMutation.data.hash}</p>}
+            {assetMutation.isSuccess && <p>{assetMutation.data.slug}</p>}
           </div>
         </div>
       </main>

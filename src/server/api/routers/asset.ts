@@ -6,11 +6,11 @@ export const assetRouter = createTRPCRouter({
   get: publicProcedure
     .input(
       z.object({
-        id: z.string(),
+        slug: z.string(),
       }),
     )
     .query(({ ctx, input }) => {
-        const { id } = input;
-        return ctx.prisma.asset.findUnique({ where: {id}})
+        const { slug } = input;
+        return ctx.prisma.asset.findUnique({ where: {slug}})
     }),
 });

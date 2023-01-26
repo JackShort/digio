@@ -7,14 +7,14 @@ export const createAssetRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-        hash: z.string(),
+        slug: z.string(),
         creator: z.string(),
       }),
     )
     .mutation(({ ctx, input }) => {
       const asset = {
         name: input.name,
-        hash: input.hash,
+        slug: input.slug,
         createdBy: input.creator,
       }
 
