@@ -90,8 +90,9 @@ const SellPage: NextPage = () => {
         <meta name="description" content="Selling on Digio" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-200">
-        <div className="rounded-md bg-zinc-100 border-zinc-900 border-2 flex flex-col items-center justify-center gap-8 px-4 py-10">
+      <main className="flex min-h-screen flex-col items-center bg-zinc-200 pt-96">
+        <h1 className="text-6xl font-bold text-zinc-900 mb-12">Listing on UniStore</h1>
+        <div className="rounded bg-zinc-100 border-zinc-900 border-2 flex flex-col items-center justify-center gap-8 px-4 py-10">
             <div className="flex items-center gap-6 w-full">
                 <label className="block w-24 shrink-0 text-zinc-500 font-bold text-right" htmlFor="inline-full-name">
                     Asset Name
