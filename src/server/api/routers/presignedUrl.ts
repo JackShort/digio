@@ -20,7 +20,7 @@ export const presignedUrlRouter = createTRPCRouter({
         }),
     )
     .mutation(({ input }) => {
-        const key = `${input.slug}.zip`;
+        const key = `${input.slug.toLowerCase()}.zip`;
 
         const params = {
             Bucket: 'unidemo',
@@ -41,7 +41,7 @@ export const presignedUrlRouter = createTRPCRouter({
     .query(({ input }) => {
         const params = {
             Bucket: 'unidemo',
-            Key: input.slug + '.zip',
+            Key: input.slug.toLowerCase() + '.zip',
         }
         
         const url = s3.getSignedUrl('getObject', params)

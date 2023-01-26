@@ -1,11 +1,12 @@
 import { useRouter } from "next/router"
 import type { ReactNode } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { BigNumber, ethers } from "ethers";
 
 import { api } from "../../utils/api";
-
-const ONE_MILLION = 1_000_000
+import { env } from "../../env/client.mjs";
+import abi from '../../abi/v0abi.json';
 
 const Container = ({ children }: { children: ReactNode}) => {
     return (
@@ -21,12 +22,29 @@ const Asset = () => {
     const router = useRouter()
     const slug = router.query.slug
 
+    const { isConnected, address } = useAccount()
+
     const {data, isLoading} = api.asset.get.useQuery({ slug: slug?.toString() ?? "" })
     const presignedUrl = api.presignedUrl.get.useQuery({ slug: slug?.toString() ?? "" })
 
-    console.log(data)
+    const { data: ownsProjectTokenData, isSuccess: ownsProjectTokenSuccess } = useContractRead({
+        address: `0x${env.NEXT_PUBLIC_CONTRACT_ADDRESS}`,
+        abi: abi,
+        functionName: 'userBoughtProject',    
+        args: [address, data?.projectId]
+    })
 
-    const { isConnected } = useAccount()
+    const { config } = usePrepareContractWrite({
+        address: `0x${env.NEXT_PUBLIC_CONTRACT_ADDRESS}`,
+        abi: abi,
+        args: [data?.projectId, "0xaDd287e6d0213e662D400d815C481b4b2ddE5d65"],
+        overrides: {value: ethers.utils.parseEther("0.01")},
+        functionName: 'mint',
+    })
+
+    const { write } = useContractWrite(config) 
+
+    console.log(ownsProjectTokenData)
 
     if (isLoading) {
         return (
@@ -48,6 +66,22 @@ const Asset = () => {
         <Container>
             {!isConnected && <ConnectButton />}
             <p>{data.name}</p>
+            {ownsProjectTokenSuccess && (ownsProjectTokenData as boolean) && 
+                (
+                    <button className="text-2xl bg-white text-[#6D59FF] py-2 px-6 rounded-full disabled:bg-slate-400" disabled={!presignedUrl.data}>
+                        <a target="_blank" href={presignedUrl.data} rel="noopener noreferrer">
+                            Download
+                        </a>
+                    </button>
+                )
+            }
+            {!(ownsProjectTokenData as boolean) && isConnected && 
+                (
+                    <button className="text-2xl bg-white text-[#6D59FF] py-2 px-6 rounded-full disabled:bg-slate-400" onClick={() => write?.()}>
+                        Buy
+                    </button>
+                )
+            }
         </Container>
     );
 }
