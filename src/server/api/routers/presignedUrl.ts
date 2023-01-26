@@ -1,5 +1,4 @@
 import S3 from 'aws-sdk/clients/s3'
-import { randomUUID } from 'crypto';
 import { z } from 'zod';
 
 import { env } from '../../../env/server.mjs';

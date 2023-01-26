@@ -2,11 +2,14 @@ import axios from 'axios'
 import { type NextPage } from "next";
 import Head from "next/head";
 import { atom, useAtom } from "jotai";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import type { FormEvent} from "react";
+import type { BigNumber } from 'ethers';
 
 import { api } from "../utils/api";
-import type { FormEvent} from "react";
+import abi from '../abi/v0abi.json';
+import { env } from '../env/client.mjs';
 
 const nameAtom = atom("Example") 
 const fileAtom = atom<File | undefined>(undefined)
@@ -28,11 +31,17 @@ const SellPage: NextPage = () => {
     }
   })
 
+  const { data: nextProjectIdData, isSuccess } = useContractRead({
+    address: `0x${env.NEXT_PUBLIC_CONTRACT_ADDRESS}`,
+    abi: abi,
+    functionName: 'nextProjectId',    
+  })
+  
   const handleTitleChange = (e: FormEvent<HTMLInputElement>) => setName(e.currentTarget.value)
   const handleFileChange = (e: FormEvent<HTMLInputElement>) => setFile(e.currentTarget.files?.[0])
 
   const submitForm = () => {
-    if ( !file || !address ) return
+    if ( !file || !address || !isSuccess ) return
     assetMutation.mutate({ name, slug: address + name, creator: address })
     // presignedUrlMutation.mutate({slug: address.toString() + name})
   }
@@ -71,7 +80,7 @@ const SellPage: NextPage = () => {
                   <div className="md:flex md:items-center">
                       <div className="md:w-1/3"></div>
                       <div className="md:w-2/3">
-                      <button className="shadow bg-purple-500 disabled:bg-slate-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" onClick={() => submitForm()} disabled={!file}>
+                      <button className="shadow bg-purple-500 disabled:bg-slate-400 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button" onClick={() => submitForm()} disabled={!file || !isSuccess}>
                           Sell
                       </button>
                       </div>
