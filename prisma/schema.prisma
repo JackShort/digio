@@ -15,6 +15,7 @@ model Asset {
     name      String
     slug      String   @unique
     projectId String
+    priceInWei String
     createdBy String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

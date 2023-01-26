@@ -10,6 +10,7 @@ export const createAssetRouter = createTRPCRouter({
         slug: z.string(),
         projectId: z.string(),
         creator: z.string(),
+        priceInWei: z.string(),
       }),
     )
     .mutation(({ ctx, input }) => {
@@ -18,6 +19,7 @@ export const createAssetRouter = createTRPCRouter({
         slug: input.slug,
         projectId: input.projectId,
         createdBy: input.creator,
+        priceInWei: input.priceInWei,
       }
 
       return ctx.prisma.asset.create({ data: asset })

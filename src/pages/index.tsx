@@ -1,12 +1,8 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
 
 const Home: NextPage = () => {
-  const { isConnected } = useAccount()
-
   return (
     <>
       <Head>
@@ -19,14 +15,11 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             Welcome to <span className="text-[hsl(280,100%,70%)]">Digio</span>
           </h1>
-          <ConnectButton />
-          {isConnected && 
-            <Link href={"/sell"}>
-              <button className="text-2xl bg-white text-[#6D59FF] py-2 px-6 rounded-full">
-                Sell on Digio
-              </button>
-            </Link>
-          }
+          <Link href={"/sell"}>
+            <button className="text-2xl bg-white text-[#6D59FF] py-2 px-6 rounded-full">
+              Sell on Digio
+            </button>
+          </Link>
         </div>
       </main>
     </>
