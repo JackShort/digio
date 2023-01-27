@@ -22,8 +22,8 @@ const Container = ({ children }: { children: ReactNode}) => {
                 <meta name="description" content="Selling on Digio" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main className="flex min-h-screen flex-col items-center bg-zinc-200 pt-48">
-                <div className="rounded bg-zinc-100 border-zinc-900 border-2 flex flex-col items-center justify-center gap-8 px-4 py-10">
+            <main className="flex min-h-screen flex-col items-center bg-[#242424]">
+                <div className="rounded flex flex-col items-center justify-center px-4 py-10 max-w-[960px]">
                     {children}
                 </div>
             </main>
@@ -92,16 +92,17 @@ const Asset = () => {
     return (
         <Container>
             <>
-                <div className="text-lg font-bold">{data.name}</div>
                 {data.headerImageKey &&
-                    <Image src={awsImages + ( data.headerImageKey as string )} width={500} height={200} alt="idk" />
+                    <Image src={awsImages + ( data.headerImageKey as string )} width={960} height={370} alt="idk" />
                 }
+                <div className="w-full text-2xl text-white font-bold border-solid border-b-2 border-[#fa5c5c] mb-12">{data.name}</div>
+                <div className="text-lg font-bold text-white mb-12">{data.description}</div>
                 {data.footerImageKey &&
-                    <Image src={awsImages + ( data.footerImageKey as string )} width={500} height={200} alt="idk" />
+                    <Image src={awsImages + ( data.footerImageKey as string )} width={960} height={480} alt="idk" />
                 }
                 {ownsAsset &&
                     (
-                    <button className="inline-flex items-center shadow bg-blue-500 disabled:bg-zinc-400 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button" disabled={!presignedUrl.data}>
+                    <button className="inline-flex items-center shadow bg-[#965CFA] disabled:bg-zinc-400 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button" disabled={!presignedUrl.data}>
                         <a target="_blank" href={presignedUrl.data} rel="noopener noreferrer">
                             Download
                         </a>
@@ -112,12 +113,12 @@ const Asset = () => {
                     (
                         <div className="flex flex-col">
                             {!isLoading && (
-                                <div className="w-full">
+                                <div className="w-full text-white">
                                     {ethers.utils.formatEther(BigNumber.from(data.priceInWei))} ETH
                                 </div>
                             )}
                             {isConnected ?
-                                    <button className="inline-flex items-center shadow bg-blue-500 disabled:bg-zinc-400 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button" disabled={transactionLoading || isLoading} onClick={() => write?.()}>
+                                    <button className="inline-flex items-center shadow bg-[#965CFA] disabled:bg-zinc-400 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg" type="button" disabled={transactionLoading || isLoading} onClick={() => write?.()}>
                                         {isLoading ?
                                             (
                                                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
