@@ -93,8 +93,6 @@ const Asset = () => {
     const textColor = data.textColor as string
     const accentColor = data.accentColor as string
 
-    console.log(textColor)
-
     return (
         <Container backgroundColor={backgroundColor}>
             <>
