@@ -16,9 +16,9 @@ const Home: NextPage = () => {
             Welcome to <span className="text-[hsl(280,100%,70%)]">UniStore</span>
           </h1>
           <Link href={"/sell"}>
-            <button className="text-2xl bg-white text-[#6D59FF] py-2 px-6 rounded-full">
-              Sell on UniStore
-            </button>
+              <button className={ `inline-flex items-center shadow bg-[hsl(280,100%,70%)] disabled:brightness-75 hover:brightness-125 focus:shadow-outline focus:outline-none text-white text-lg font-bold py-2 px-10 rounded-lg`  }type="button">
+                Sell on UniStore
+              </button>
           </Link>
         </div>
       </main>
