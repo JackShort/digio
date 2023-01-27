@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'Pixel';
+  src: url('/fonts/04B_03__.ttf');
+ }
+
+ body {
+  font-family: Pixel;
+}
