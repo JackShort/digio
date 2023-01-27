@@ -28,9 +28,9 @@ export const createAssetRouter = createTRPCRouter({
         priceInWei: input.priceInWei,
         headerImageKey: input.headerImageKey,
         footerImageKey: input.footerImageKey,
-        backgroundColor: input.backgroundColor,
-        textColor: input.textColor,
-        accentColor: input.accentColor,
+        backgroundColor: input.backgroundColor ?? undefined,
+        textColor: input.textColor ?? undefined,
+        accentColor: input.accentColor ?? undefined,
       }
 
       return ctx.prisma.asset.create({ data: asset })
