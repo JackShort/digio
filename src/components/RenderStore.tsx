@@ -9,6 +9,7 @@ export const RenderStore = ({
     description,
     headerSrc,
     footerSrc,
+    useAws,
     textColor,
     accentColor,
     ownsAsset,
@@ -23,6 +24,7 @@ export const RenderStore = ({
     description?: string,
     headerSrc?: string,
     footerSrc?: string,
+    useAws: boolean,
     textColor: string,
     accentColor: string,
     ownsAsset: boolean,
@@ -36,12 +38,12 @@ export const RenderStore = ({
     return (
         <>
             {headerSrc &&
-                <Image src={awsImages + headerSrc} width={960} height={370} alt="idk" />
+                <Image src={useAws ? awsImages + headerSrc : headerSrc} width={960} height={370} alt="idk" />
             }
-            <div className={`w-full text-2xl text-[${textColor}] font-bold border-solid border-b-4 border-[${accentColor}] mb-12`}>{name ?? "Example"}</div>
+            <div className={`w-full text-2xl text-[${textColor}] font-bold border-solid border-b-4 border-[${accentColor}] mb-12 mt-4`}>{name ?? "Example"}</div>
             <div className={ `text-lg font-bold text-[${textColor}] mb-12` }>{description ?? "..."}</div>
             {footerSrc &&
-                <Image src={awsImages + footerSrc} width={960} height={480} alt="idk" />
+                <Image src={useAws ? awsImages + footerSrc : footerSrc} width={960} height={480} alt="idk" />
             }
             <div className="flex mt-12 flex-col w-full">
                 <div className={`w-full text-2xl text-[${textColor}] font-bold border-solid border-b-2 border-[${accentColor}] mb-8`}>{ownsAsset ? "Download" : "Purchase"}</div>

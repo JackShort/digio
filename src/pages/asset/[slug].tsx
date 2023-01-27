@@ -101,6 +101,7 @@ const Asset = () => {
                 description={data.description as string}
                 headerSrc={data.headerImageKey ? data.headerImageKey as string : undefined}
                 footerSrc={data.footerImageKey ? data.footerImageKey as string : undefined}
+                useAws={true}
                 textColor={textColor}
                 accentColor={accentColor}
                 ownsAsset={ownsAsset}
