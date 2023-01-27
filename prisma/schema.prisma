@@ -18,6 +18,9 @@ model Asset {
     priceInWei String
     createdBy String
     description String
+    backgroundColor String @default("#000000")
+    textColor String @default("#ffffff")
+    accentColor String @default("#FB118E")
     headerImageKey String?
     footerImageKey String?
     createdAt DateTime @default(now())

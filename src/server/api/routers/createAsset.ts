@@ -13,6 +13,9 @@ export const createAssetRouter = createTRPCRouter({
         priceInWei: z.string(),
         headerImageKey: z.string().nullable(),
         footerImageKey: z.string().nullable(),
+        backgroundColor: z.string().nullable(),
+        textColor: z.string().nullable(),
+        accentColor: z.string().nullable(),
       }),
     )
     .mutation(({ ctx, input }) => {
@@ -25,6 +28,9 @@ export const createAssetRouter = createTRPCRouter({
         priceInWei: input.priceInWei,
         headerImageKey: input.headerImageKey,
         footerImageKey: input.footerImageKey,
+        backgroundColor: input.backgroundColor,
+        textColor: input.textColor,
+        accentColor: input.accentColor,
       }
 
       return ctx.prisma.asset.create({ data: asset })

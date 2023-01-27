@@ -22,6 +22,10 @@ const priceAtom = atom("")
 const executedSellAtom = atom(false)
 const assetHashAtom = atom("")
 
+const backgroundColorAtom = atom("#000000") //#242424
+const textColorAtom = atom("#ffffff")
+const accentColorAtom = atom("#FB118E") //#fa5c5c
+
 const SellPage: NextPage = () => {
   const [name, setName] = useAtom(nameAtom)
   const [description, setDescription] = useAtom(descriptionAtom)
@@ -31,6 +35,9 @@ const SellPage: NextPage = () => {
   const [price, setPrice] = useAtom(priceAtom)
   const [executedSell, setExecutedSell] = useAtom(executedSellAtom)
   const [assetHash, setAssetHash] = useAtom(assetHashAtom)
+  const [backgroundColor, setBackgroundColor] = useAtom(backgroundColorAtom)
+  const [textColor, setTextColor] = useAtom(textColorAtom)
+  const [accentColor, setAccentColor] = useAtom(accentColorAtom)
 
   const debouncedPrice = useDebounce(price, 500)
 
@@ -101,7 +108,19 @@ const SellPage: NextPage = () => {
     hash: data?.hash,
     onSuccess: () => {
       if ( !file || !address || !nextProjectIdSuccess || !nextProjectIdData ) return
-      assetMutation.mutate({ name, description, slug: address.toLowerCase() + name.replace(/\s/g, "").toLowerCase(), creator: address, projectId: (nextProjectIdData as BigNumber).toNumber().toString(), priceInWei: ethers.utils.parseEther(debouncedPrice).toString(), headerImageKey: headerFile ? address.toLowerCase() + name.replace(/\s/g, "").toLowerCase() + 'header.' + (headerFile.name.split('.').pop() ?? '') : null, footerImageKey: footerFile ? address.toLowerCase() + name.replace(/\s/g, "").toLowerCase() + 'footer.' + (footerFile.name.split('.').pop() ?? '') : null })
+      assetMutation.mutate({ 
+        name,
+        description,
+        slug: address.toLowerCase() + name.replace(/\s/g, "").toLowerCase(),
+        creator: address,
+        projectId: (nextProjectIdData as BigNumber).toNumber().toString(),
+        priceInWei: ethers.utils.parseEther(debouncedPrice).toString(),
+        headerImageKey: headerFile ? address.toLowerCase() + name.replace(/\s/g, "").toLowerCase() + 'header.' + (headerFile.name.split('.').pop() ?? '') : null,
+        footerImageKey: footerFile ? address.toLowerCase() + name.replace(/\s/g, "").toLowerCase() + 'footer.' + (footerFile.name.split('.').pop() ?? '') : null ,
+        backgroundColor,
+        textColor,
+        accentColor,
+      })
     }
   })
   
@@ -111,6 +130,9 @@ const SellPage: NextPage = () => {
   const handleFileChange = (e: FormEvent<HTMLInputElement>) => setFile(e.currentTarget.files?.[0])
   const handleHeaderFileChange = (e: FormEvent<HTMLInputElement>) => setHeaderFile(e.currentTarget.files?.[0])
   const handleFooterFileChange = (e: FormEvent<HTMLInputElement>) => setFooterFile(e.currentTarget.files?.[0])
+  const handleBackgroundColorChange = (e: FormEvent<HTMLInputElement>) => setBackgroundColor(e.currentTarget.value)
+  const handleTextColorChange = (e: FormEvent<HTMLInputElement>) => setTextColor(e.currentTarget.value)
+  const handleAccentColorChange = (e: FormEvent<HTMLInputElement>) => setAccentColor(e.currentTarget.value)
 
   const canSubmit = !( !file || !address || !nextProjectIdSuccess || !nextProjectIdData || !name || !price || !description || transactionLoading || assetMutation.isLoading)
 
@@ -126,7 +148,7 @@ const SellPage: NextPage = () => {
         <meta name="description" content="Selling on Digio" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center bg-zinc-200 pt-96">
+      <main className="flex min-h-screen flex-col items-center bg-zinc-200 pt-48">
         <h1 className="text-6xl font-bold text-zinc-900 mb-12">Create a Store</h1>
         <div className="rounded bg-zinc-100 border-zinc-900 border-2 flex flex-col items-center justify-center gap-8 px-4 py-10">
             <div className="flex items-center gap-6 w-full">
@@ -149,6 +171,24 @@ const SellPage: NextPage = () => {
                 <label className="block shrink-0 text-zinc-500 font-bold text-left ml-4" htmlFor="inline-price">
                   ETH
                 </label>
+            </div>
+            <div className="flex items-center gap-6 w-full">
+                <label className="block w-24 shrink-0 text-zinc-500 font-bold text-right" htmlFor="background-color">
+                  Background Color
+                </label>
+                <input className="bg-zinc-200 appearance-none border-2 border-zinc-200 rounded w-full py-2 px-4 text-zinc-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-400" id="background-color" type="text" value={backgroundColor} onChange={handleBackgroundColorChange} placeholder="#000000" />
+            </div>
+            <div className="flex items-center gap-6 w-full">
+                <label className="block w-24 shrink-0 text-zinc-500 font-bold text-right" htmlFor="text-color">
+                  Text Color
+                </label>
+                <input className="bg-zinc-200 appearance-none border-2 border-zinc-200 rounded w-full py-2 px-4 text-zinc-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-400" id="text-color" type="text" value={textColor} onChange={handleTextColorChange} placeholder="#ffffff" />
+            </div>
+            <div className="flex items-center gap-6 w-full">
+                <label className="block w-24 shrink-0 text-zinc-500 font-bold text-right" htmlFor="accent-color">
+                  Accent Color
+                </label>
+                <input className="bg-zinc-200 appearance-none border-2 border-zinc-200 rounded w-full py-2 px-4 text-zinc-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-400" id="accent-color" type="text" value={accentColor} onChange={handleAccentColorChange} placeholder="#ffffff" />
             </div>
             <div className="flex items-center gap-6 w-full">
                 <label className="block w-24 text-zinc-500 font-bold shrink-0 text-right" htmlFor="header-image-input">
@@ -185,7 +225,7 @@ const SellPage: NextPage = () => {
                             (
                               <>
                                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                                 Processing...
