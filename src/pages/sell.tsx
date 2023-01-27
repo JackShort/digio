@@ -23,9 +23,9 @@ const priceAtom = atom("")
 const executedSellAtom = atom(false)
 const assetHashAtom = atom("")
 
-const backgroundColorAtom = atom("#000000") //#242424
+const backgroundColorAtom = atom("#242424") //#242424
 const textColorAtom = atom("#ffffff")
-const accentColorAtom = atom("#FB118E") //#fa5c5c
+const accentColorAtom = atom("#fa5c5c") //#fa5c5c
 
 const headerImageAtom = atom("")
 const footerImageHeader = atom("")
@@ -167,12 +167,12 @@ const SellPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Sell</title>
+        <title>Create</title>
         <meta name="description" content="Selling on Digio" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex">
-        <div className="flex w-1/2 min-h-screen flex-col items-center bg-zinc-200 pt-48">
+        <div className="flex w-1/2 min-h-screen flex-col items-center bg-zinc-200 pt-16">
           <h1 className="text-6xl font-bold text-zinc-900 mb-12">Create a Store</h1>
           <div className="rounded bg-zinc-100 border-zinc-900 border-2 flex flex-col items-center justify-center gap-8 px-4 py-10">
               <div className="flex items-center gap-6 w-full">
@@ -256,7 +256,7 @@ const SellPage: NextPage = () => {
                                 </>
                               ) : (
                                 <>
-                                  Sell
+                                  Create Store
                                 </>
                               )
                             }
@@ -269,7 +269,7 @@ const SellPage: NextPage = () => {
               }
           </div>
         </div>
-        <div className={ `flex w-1/2 bg-[${backgroundColor}] items-center flex-col` }>
+        <div className={ `flex w-1/2 bg-[#242424] items-center flex-col` }>
           <div className={ `rounded flex flex-col items-center justify-center px-4 py-10 max-w-[960px] min-w-[720px]` }>
                 <RenderStore 
                   name={name.length === 0 ? 'Example' : name}

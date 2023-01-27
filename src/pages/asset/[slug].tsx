@@ -23,7 +23,7 @@ const Container = ({ children, backgroundColor }: { children: ReactNode, backgro
                 <meta name="description" content="Selling on Digio" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main className={ `flex min-h-screen flex-col items-center bg-[${backgroundColor}]` }>
+            <main className={ `flex min-h-screen flex-col items-center bg-[#242424]` }>
                 <div className="rounded flex flex-col items-center justify-center px-4 py-10 max-w-[960px] min-w-[720px]">
                     {children}
                 </div>
@@ -90,17 +90,17 @@ const Asset = () => {
         )
     }
 
-    const backgroundColor = data.backgroundColor as string
-    const textColor = data.textColor as string
-    const accentColor = data.accentColor as string
+    const backgroundColor = data.backgroundColor 
+    const textColor = data.textColor 
+    const accentColor = data.accentColor 
 
     return (
         <Container backgroundColor={backgroundColor}>
             <RenderStore
                 name={data.name}
-                description={data.description as string}
-                headerSrc={data.headerImageKey ? data.headerImageKey as string : undefined}
-                footerSrc={data.footerImageKey ? data.footerImageKey as string : undefined}
+                description={data.description }
+                headerSrc={data.headerImageKey ? data.headerImageKey  : undefined}
+                footerSrc={data.footerImageKey ? data.footerImageKey  : undefined}
                 useAws={true}
                 textColor={textColor}
                 accentColor={accentColor}
@@ -109,7 +109,7 @@ const Asset = () => {
                 isConnected={isConnected}
                 isLoading={isLoading}
                 transactionLoading={transactionLoading}
-                priceInWei={data.priceInWei as string}
+                priceInWei={data.priceInWei }
                 write={write}
             />
         </Container>
